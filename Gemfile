@@ -27,6 +27,7 @@ gem 'rack-cors'
 gem 'active_model_serializers'
 gem 'enumerize'
 
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rspec-rails'
@@ -49,3 +50,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # bullet
 gem 'bullet'
+
+group :test do
+  gem 'rspec_junit_formatter'
+end

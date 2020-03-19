@@ -11,7 +11,7 @@ jobs:
     working_directory: ~/repo
     docker:
       # Language: Ruby
-      - image: circleci/ruby:2.6.5-node
+      - image: circleci/ruby:2.6.3
         environment:
           BUNDLE_JOBS: 3
           BUNDLE_RETRY: 3
@@ -25,7 +25,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: training_logs_api_test
-    step:
+    steps:
       - checkout
       - run:
           name: Install bundler
@@ -50,14 +50,14 @@ jobs:
           command: bundle exec rails db:schema:load
 
       - run:
-        name: Run rspec in parallel
-        command: |
-          mkdir /tmp/test-results
-          bundle exec rspec --profile 10 \
-                      --format RspecJunitFormatter \
-                      --out /tmp/test_results/rspec.xml \
-                      --format progress \
-                      $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec --profile 10 \
+                        --format RspecJunitFormatter \
+                        --out /tmp/test_results/rspec.xml \
+                        --format progress \
+                        $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
 
       # collect reports
       - store_test_results:
@@ -66,13 +66,6 @@ jobs:
           path: /tmp/test-results
           destination: test-results
 
-
       - run:
-        name: Install reviewdog
-        command: |
-          curl -fSL https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64 -o reviewdog && chmod +x ./reviewdog
-  
-      - run:
-          name: Run rubocop & reviewdog
-          command: bundle exec rubocop | ./reviewdog -f=rubocop -reporter=github-pr-review
-
+          name: Run rubocop
+          command: bundle exec rubocop
